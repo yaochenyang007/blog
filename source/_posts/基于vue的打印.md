@@ -5,16 +5,21 @@ tags:  [vue,canvas,npm,javascript]
 categories: vue
 ---
 
-业务需求：目前开发的财务ERP系统，跟金蝶友商类似。科目打印需自动拼接上辅助核算，如科目有外币需打印外币
+### 业务需求：目前开发的财务ERP系统，跟金蝶友商类似。科目打印需自动拼接上辅助核算，如科目有外币需打印外币
 <!-- more -->
 <img src="https://ws1.sinaimg.cn/large/694830ebgy1fh3pyd05klj21kw0f2dy2.jpg"  title="记账凭证" />
 插图：先用需要打印的页面用canvas画出 传成pdf 之后后台配合预览打印pdf。
-步骤一：安装2个依赖 npm install jspdf html2canvas -D
+步骤一：安装2个依赖  
+
+``` 
+npm install jspdf html2canvas -D
+```
 
 步骤二：基于jspdf与html2canvas封装一个全局打印方法
 
 代码：
 
+```
 import html2Canvas from 'html2canvas'
 
 import JsPDF from 'jspdf'
@@ -138,11 +143,11 @@ window.open(axios.defaults.baseURL+'/file/showpdf/'+response.data.data.uri)//在
   }
 
 }
-
+```
 步骤三：调用
 
   //打印凭证
-
+```
     printVoucher() {
 
       //日期
@@ -263,7 +268,7 @@ window.open(axios.defaults.baseURL+'/file/showpdf/'+response.data.data.uri)//在
 
 this.$refs.print.printvoucher(); //打印
     },
-
+```
 
 
    
@@ -271,7 +276,7 @@ this.$refs.print.printvoucher(); //打印
 
 
 模板：
-
+```
 export default {
 
   name: "printVoucher",
@@ -384,9 +389,4 @@ voucher5tr() {
 
   }
 
-};
-
-作者：清减半夏时光
-链接：https://www.jianshu.com/p/3665fbc2533b
-來源：简书
-著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
+}```
