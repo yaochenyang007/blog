@@ -1,13 +1,13 @@
 ---
-title: 前端面试分享
+title: 前端面试分享js篇
 date: 2019-02-22 14:30:06
-tags:  [vue,canvas,css,javascript]
+tags:  [javascript，继承,promise,call,prototype,事情委托]
 categories: 面试
 ---
 
 
 
-### JavaScript call,aplay,bind异同
+### JavaScript call,apply,bind异同
 
 
 call 和 apply 。这两个函数都是在特定的作用域中调用函数,能改变函数的作用域，实际上是改变函数体内 this 的值 。
@@ -200,3 +200,66 @@ document.onclick = function(event){
 
 
 ###    Promise原理
+
+###    现在有函数A 和函数B，请你实现B继承A。 
+
+###    js 去重 方法
+
+
+###   window的onload事件和domcontentloaded谁先谁后？
+
+
+
+###    typeof和instanceof的区别
+
+
+
+###    new和instanceof的内部机制
+
+
+###    说一下你对generator的了解？
+
+###    说一下macrotask 和 microtask？并说出下面代码的运行结果。
+
+###    Http请求中的keep-alive有了解吗。
+
+###    数组扁平化处理：实现一个flatten方法，使得输入一个数组，该数组里面的元素也可以是数组，该方法会输出一个扁平化的数组。
+
+###    实现一个div滑动的动画，由快至慢5s结束（不准用css3)。
+
+###   页面内有一个input输入框，实现在数组arr查询命中词并要求autocomplete效果。
+
+###   实现超出整数存储范围的两个大整数相加function add(a,b)。注意a和b以及函数的返回值都是字符串。
+
+###   深入理解TCP
+
+###   浏览器事件有哪些过程? 为什么一般在冒泡阶段, 而不是在捕获阶段注册监听? addEventListener 参数分别是什么 ? 
+
+###   移动端300ms延时的原因? 如何处理?
+
+###  前端跨域方案
+
+###  js浮点数运算不精确 如何解决?
+
+###  new String('a') 和 'a' 是一样的么? 
+
+###  DOM基础知识,添加元素,删除元素等等...
+
+### DOM节点类型 
+
+### 前端安全 xss 和 csrf
+
+https://mp.weixin.qq.com/s/IROuODpzxv9nTtnKgMyvsg
+
+1. xss 跨站脚本攻击，主要是前端层面的，用户在输入层面插入攻击脚本，改变页面的显示，或则窃取网站 cookie，预防方法：不相信用户的所有操作，对用户输入进行一个转义，不允许 js 对 cookie 的读写
+
+2. csrf 跨站请求伪造，以你的名义，发送恶意请求，通过 cookie 加参数等形式过滤
+
+3. 我们没法彻底杜绝攻击，只能提高攻击门槛
+
+### 闭包相关
+### 简述事件流，事件代理
+
+### js 二分查找
+
+### 什么是栈
