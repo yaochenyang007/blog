@@ -83,7 +83,7 @@ arr[4] = "Adrew"
 arr[5] = "Martin"
 
 document.write(arr + "<br />")
-arr.splice(2,0,"William")
+arr.splice(2,0,"William")  第一个参数，表示删除数的位置，第二个参数表示删除数的个数，第三个参数表示 删除的数改为当前参数值
 document.write(arr + "<br />")
 
 </script>
