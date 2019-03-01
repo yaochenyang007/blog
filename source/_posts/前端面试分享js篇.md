@@ -201,9 +201,123 @@ document.onclick = function(event){
 
 ###    Promise原理
 
+
+
+
 ###    现在有函数A 和函数B，请你实现B继承A。 
 
-###    js 去重 方法
+####   原型继承
+其核心是将父类的实例作为子类的原型
+```
+function A(){
+    this.a = 1;
+    this.b = 2;
+    this.add = function(){
+        return this.a + this.b;
+    }
+}
+function B(){
+
+}
+ B.prototype = new A();
+B.prototype.add();  //3
+B.prototype.c = 4;
+var b = new B();
+
+b  = function B(){
+    _proto_: A(){
+        a:1,
+        b :2,
+        add : function(){
+            return this.a + this.b;
+        },
+        _proto_:Object
+    }
+}  
+
+b.a //1 
+b.b //2
+b.c //4
+
+```
+
+#### 构造函数继承
+核心是将父类的实例作为子类的原型
+```
+var function A(){
+    this.a=1;
+    this.b=2;
+    this.add=function(){
+    	console.log(a+b);
+    }
+}
+var B=new A();
+B.c=3;
+B.add=function () {
+	console.log(B.a+B.b+B.c);
+}
+console.log(B.a); 
+console.log(B.b);
+console.log(B.c);
+B.add();
+
+```
+###  彻底理解js中的&&和||
+
+在javascript中：
+
+以下内容会被当成false处理："" , false , 0 , null , undefined , NaN
+
+其他都是true。注意：字符串"false"也会被当做true处理，在未转型的情况下他是字符串，属于一个对象，所以是true。
+
+
+所以：
+
+a || b：如果a是true，那么b不管是true还是false，都返回true。因此不用判断b了，这个时候刚好判断到a，因此返回a。
+
+　　　如果a是false，那么就要判断b，如果b是true，那么返回true，如果b是false，返回false，其实不就是返回b了吗。
+
+a && b：如果a是false，那么b不管是true还是false，都返回false，因此不用判断b了，这个时候刚好判断到a，因此返回a。
+
+　　　如果a是true，那么就要在判断b，和刚刚一样，不管b是true是false，都返回b。
+
+###    js去重方法
+
+数组去重
+```
+var arr = [2,2,3,5,6,7,9,10,2,4,6,7,8,4,6]
+var temp = []
+for(let key in arr){
+if(temp.indexOf(arr[key]) ===-1){
+	temp.push(arr[key]);
+}
+}
+
+console.log(temp) //[2, 3, 5, 6, 7, 9, 10, 4, 8]
+```
+
+数组对象属性值去重
+
+
+
+```
+var arr = [{id:1},{id:2},{id:3},{id:4},{id:5},{id:2},{id:6},{id:20},{id:10},{id:8},{id:6},{id:5},{id:6}]
+function arrayUnique2(arr, name) {
+    const hash = {};
+    return arr.reduce(function (item, next) {
+        hash[next[name]] ? '' : hash[next[name]] = true && item.push(next);
+        //先执行 hash[next[name]],若为false,则执行 hash[next[name]] = true && item.push(next),
+       // 再执行 等号右边 (true && item.push(next))，再执行 等号左边 hash[next[name]] 赋值。
+        return item;
+    }, []);
+}
+var qwe = arrayUnique2(arr,'id')
+
+console.log(qwe)  
+// [{id: 1}, {id: 2}, {id: 3},{id: 4}, {id: 5}, {id: 6},{id: 20}, {id: 10},{id: 8}]
+
+```
+
 
 
 ###   window的onload事件和domcontentloaded谁先谁后？
@@ -251,11 +365,11 @@ document.onclick = function(event){
 
 https://mp.weixin.qq.com/s/IROuODpzxv9nTtnKgMyvsg
 
-1. xss 跨站脚本攻击，主要是前端层面的，用户在输入层面插入攻击脚本，改变页面的显示，或则窃取网站 cookie，预防方法：不相信用户的所有操作，对用户输入进行一个转义，不允许 js 对 cookie 的读写
+xss 跨站脚本攻击，主要是前端层面的，用户在输入层面插入攻击脚本，改变页面的显示，或则窃取网站 cookie，预防方法：不相信用户的所有操作，对用户输入进行一个转义，不允许 js 对 cookie 的读写
 
-2. csrf 跨站请求伪造，以你的名义，发送恶意请求，通过 cookie 加参数等形式过滤
+csrf 跨站请求伪造，以你的名义，发送恶意请求，通过 cookie 加参数等形式过滤
 
-3. 我们没法彻底杜绝攻击，只能提高攻击门槛
+我们没法彻底杜绝攻击，只能提高攻击门槛
 
 ### 闭包相关
 ### 简述事件流，事件代理
@@ -263,3 +377,13 @@ https://mp.weixin.qq.com/s/IROuODpzxv9nTtnKgMyvsg
 ### js 二分查找
 
 ### 什么是栈
+### 解释事件代理，事件流模型
+### 数据统计，比ajax更简单的方法
+### 手写jsonp实现，发送和回调接收
+### 判断变量类型，如何判断变量是函数
+### 如何判断一个变量是数组
+
+### js实现css的:hover效果
+
+
+### 手写debouce(去抖)函数
