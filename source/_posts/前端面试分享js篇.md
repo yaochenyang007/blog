@@ -199,13 +199,7 @@ document.onclick = function(event){
 1、提高JavaScript性能。事件委托可以显著的提高事件的处理速度，减少内存的占用。 实例分析JavaScript中的事件委托和事件绑定 
 
 
-###    Promise原理
-
-
-
-
 ###    现在有函数A 和函数B，请你实现B继承A。 
-
 ####   原型继承
 其核心是将父类的实例作为子类的原型
 ```
@@ -262,7 +256,20 @@ console.log(B.c);
 B.add();
 
 ```
-###  彻底理解js中的&&和||
+###  js中的 位运算符 &(AND) 和 |(OR)
+位运算 AND 由和号（&）表示，直接对数字的二进制形式进行运算。它把每个数字中的数位对齐，然后用下面的规则对同一位置上的两个数位进行 AND 运算：
+
+1 | 1 = 1
+1 | 0 = 1
+0 | 1 = 1
+0 | 0 = 0
+
+1 & 1 = 1
+1 & 0 = 0
+0 & 1 = 0
+0 & 0 = 0
+
+###  彻底理解js中的&&(逻辑与)  和|| (逻辑或)
 
 在javascript中：
 
@@ -276,10 +283,22 @@ B.add();
 a || b：如果a是true，那么b不管是true还是false，都返回true。因此不用判断b了，这个时候刚好判断到a，因此返回a。
 
 　　　如果a是false，那么就要判断b，如果b是true，那么返回true，如果b是false，返回false，其实不就是返回b了吗。
-
+```
+var a = 0 || 1 // 1
+var a = 1 || 0 // 1
+var a = 0 || false // false
+var a = 1 || 2 // 1
+```
 a && b：如果a是false，那么b不管是true还是false，都返回false，因此不用判断b了，这个时候刚好判断到a，因此返回a。
 
 　　　如果a是true，那么就要在判断b，和刚刚一样，不管b是true是false，都返回b。
+
+```
+var a = 1 && 0; // 0
+var a = 0 && 1; // 0
+var a = 1 && 1; // 1
+var a = 0 && 0; // 0
+```
 
 ###    js去重方法
 
@@ -321,25 +340,185 @@ console.log(qwe)
 
 
 ###   window的onload事件和domcontentloaded谁先谁后？
+DOMContentLoaded事件 先执行。
 
+当DOM树构建完成的时候就会执行DOMContentLoaded事件。
+当window.onload事件触发时。页面上所有的DOM，样式表，脚本，图片，flash都已经加载完成了。
 
 
 ###    typeof和instanceof的区别
 
+typeof 是一个一元运算，放在一个运算数之前，运算数可以是任意类型。
+
+它返回值是一个字符串，该字符串说明运算数的类型。（typeof 运算符返回一个用来表示表达式的数据类型的字符串。 ）
+
+运算数为数字 typeof(x) = "number" 
+
+字符串 typeof(x) = "string" 
+
+布尔值 typeof(x) = "boolean" 
+
+对象,数组和null typeof(x) = "object" 
+
+函数 typeof(x) = "function" 
+
+在 JavaScript 中，判断一个变量的类型尝尝会用 typeof 运算符，在使用 typeof 运算符时采用引用类型存储值会出现一个问题，无论引用的是什么类型的对象，它都返回 “object”。这就需要用到instanceof来检测某个对象是不是另一个对象的实例。
+
+instanceof
+
+instanceof 运算符用来测试一个对象在其原型链中是否存在一个构造函数的 prototype 属性。
+instanceof 用于判断一个变量是否某个对象的实例.
+
+```
+如 :var a=new Array();
+
+alert(a instanceof Array); // true，
+
+同时 alert(a instanceof Object) //也会返回 true;
+
+这是因为 Array 是 object 的子类。
 
 
+再如：function test(){};
+
+var a=new test();
+
+alert(a instanceof test) 会返回true
+
+```
+
+更重的一点是 instanceof 可以在继承关系中用来判断一个实例是否属于它的父类型。
+
+```
+function Foo(){} 
+Foo.prototype = new Aoo();//JavaScript 原型继承 
+var foo = new Foo(); 
+console.log(foo instanceof Foo)//true 
+console.log(foo instanceof Aoo)//true
+
+```
 ###    new和instanceof的内部机制
 
+首先我们来看看var obj = new O()这条语句发生了什么:
 
-###    说一下你对generator的了解？
+```
+var obj = (function(){
+    var obj = {};
+    obj.__proto__ = O.prototype;
 
-###    说一下macrotask 和 microtask？并说出下面代码的运行结果。
+    //其他赋值语句...
 
+    return obj;
+})();
+也就是说var obj = new O()返回了一个obj对象，它的隐式原型链(__proto__)是指向O原型(prototype)的。这就是new的内部工作方式。
+```
+
+下面再看instanceof，假设现在有 x instanceof y 一条语句，则其内部实际作出了如下的判断:
+
+```
+while(x.__proto__!==null) {
+　　if(x.__proto__===y.prototype) {
+　　　　return true;
+　　　　break;
+　　}
+　　x.__proto__ = x.__proto__.proto__;
+}
+if(x.__proto__==null) {return false;}
+x会一直沿着隐式原型链__proto__向上查找直到x.__proto__.__proto__......===y.prototype为止，如果找到则返回true，也就是x为y的一个实例。否则返回false，x不是y的实例。
+```
+
+下面举出两个例子，把对O的原型(prototype)的修改放在obj的声明之前和之后的两种情况下，使用instanceof对obj作检测的结果对比：
+```
+function F(){}
+function O(){}
+O.prototype = new F();
+var obj = new O();
+console.log(obj instanceof O);//true
+console.log(obj instanceof F);//true
+```
+
+```
+function F(){}
+function O(){}
+var obj = new O();
+o.prototype = new F();
+console.log(obj instanceof O);//false
+console.log(obj instanceof F);//false
+```
+
+
+###    说一下macrotask 和 microtask？
+macrotasks: setTimeout, setInterval, setImmediate, I/O, UI rendering
+microtasks: process.nextTick, Promises, Object.observe(废弃), MutationObserver
+
+```
+console.log(1);
+setTimeout(function(){
+  console.log(2);
+}, 0);
+Promise.resolve().then(function(){
+  console.log(3);
+}).then(function(){
+  console.log(4);
+});
+
+上面的代码输出的是 1, 3, 4, 2;
+```
+Promise的函数代码的异步任务会优先于setTimeout的延时为0的任务先执行。
+
+原因是任务队列分为 macrotasks 和 microtasks, 而promise中的then方法的函数会被推入到microtasks队列中，
+而setTimeout函数会被推入到macrotasks。
+任务队列中，在每一次事件循环中，macrotask只会提取一个执行，而microtask会一直提取，直到microsoft队列为空为止。
+也就是说如果某个microtask任务被推入到执行中，那么当主线程任务执行完成后，会循环调用该队列任务中的下一个任务来执行，直到该任务队列到最后一个任务为止。而事件循环每次只会入栈一个macrotask,主线程执行完成该任务后又会检查microtasks队列并完成里面的所有任务后再执行macrotask的任务。
 ###    Http请求中的keep-alive有了解吗。
 
-###    数组扁平化处理：实现一个flatten方法，使得输入一个数组，该数组里面的元素也可以是数组，该方法会输出一个扁平化的数组。
+http keep-alive是为了让tcp活得更久一点，以便在同一个连接上传送多个http，提高socket的效率。
+在http早期，每个http请求都要求打开一个tcp socket连接，并且使用一次之后就断开这个tcp连接。
+使用keep-alive可以改善这种状态，即在一次TCP连接中可以持续发送多份数据而不会断开连接。通过使用keep-alive机制，可以减少tcp连接建立次数，也意味着可以减少TIME_WAIT状态连接，以此提高性能和提高httpd服务器的吞吐率(更少的tcp连接意味着更少的系统内核调用,socket的accept()和close()调用)。
 
+###    数组扁平化处理：实现一个flatten方法，使得输入一个数组，该数组里面的元素也可以是数组，该方法会输出一个扁平化的数组。
+var arr=[1,[2,[[3,4],5],6]];
+//利用reduce实现
+```
+ function flatten(arr){
+     return arr.reduce(function(total,next){
+        return total.concat(Array.isArray(next) ? flatten(next) : next );
+     },[])
+}
+flatten(arr);
+//[1, 2, 3, 4, 5, 6]
+```
+
+//利用if判断实现,递归
+```
+function flatten(arr){
+       var result = [];
+    if(!Array.isArray(arr)){
+        if(arr % 1 === 0){
+            result.push(arr);
+        }else{
+             throw Error('抛出异常，不为整数');
+        }
+    }else{
+        for(let i=0;i<arr.length;i++){
+            result = result.concat( Array.isArray(arr[i]) ? flatten(arr[i]) : arr[i])
+        }
+    }
+    return result;
+}
+```
+
+//扁平化数组(不使用循环，使用字符串)
+```
+function flatten(arr) {
+    let str = JSON.stringify(arr).replace(/\[|\]/g, '');
+    //Array.of方法用于将一组值，转换为数组。
+    return JSON.parse(Array.of('[' + str + ']')[0]);
+}
+
+```
 ###    实现一个div滑动的动画，由快至慢5s结束（不准用css3)。
+
 
 ###   页面内有一个input输入框，实现在数组arr查询命中词并要求autocomplete效果。
 
@@ -350,12 +529,46 @@ console.log(qwe)
 ###   浏览器事件有哪些过程? 为什么一般在冒泡阶段, 而不是在捕获阶段注册监听? addEventListener 参数分别是什么 ? 
 
 ###   移动端300ms延时的原因? 如何处理?
+300 毫秒延迟的主要原因是解决双击缩放。即用手指在屏幕上快速点击两次，iOS 自带的 Safari 浏览器会将网页缩放至原始比例。
+1.
+引入 fasrClick.js 插件，
+fastclick.js的原理是：FastClick的实现原理是在检测到touchend事件的时候，会通过DOM自定义事件立即出发模拟一个click事件，并把浏览器在300ms之后真正的click事件阻止掉。
+```
+//js写法
+ if('addEventListener' in document) {
+        document.addEventListener('DOMContentLoaded', function() {
+            FastClick.attach(document.body);
+        }, false);
+    }
+// require写法
+var attachFastClick = require('fastclick');
+attachFastClick(document.body);
 
+```
+2.添加viewpoint meta标签。
+```
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+```
 ###  前端跨域方案
 
 ###  js浮点数运算不精确 如何解决?
 
 ###  new String('a') 和 'a' 是一样的么? 
+
+从语法上来说String(a)返回的是基本类型，new String(a)创建的是一个对象，两者是有区别的。
+```
+var s0 = 'hello';
+var s1 = new String(s0);
+var s2 = String(s0);
+console.log(s1 === s2); // false
+console.log(s1 === s0); // false
+console.log(s2 === s0); // true
+s1.foo = 'bar';
+s2.foo = 'bar';
+console.log(s1.foo); // bar
+console.log(s2.foo); // undefined
+
+```
 
 ###  DOM基础知识,添加元素,删除元素等等...
 
@@ -385,5 +598,8 @@ csrf 跨站请求伪造，以你的名义，发送恶意请求，通过 cookie �
 
 ### js实现css的:hover效果
 
-
 ### 手写debouce(去抖)函数
+
+###    Promise原理
+
+###    说一下你对generator的了解？
