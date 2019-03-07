@@ -518,7 +518,155 @@ function flatten(arr) {
 
 ```
 ###    实现一个div滑动的动画，由快至慢5s结束（不准用css3)。
+```
+.sj{
+    width:50px;
+    height:50px;
+    border:1px solid red;
+    position:absolute;
+    left:0
+}
+<div class="sj" id="sj"></div>
+//ele为要移动的盒子，target为目标位置（像素），spd为计数器的频率
+var ele = document.getElementById('sj')
+function animate(ele,spd){
+    var start = Date.now(); // remember start time
+    var timer = setInterval(function() {
+        var timePassed = Date.now() - start;
+        var step = Math.ceil(Math.abs(timePassed - 5000)/10)  //abs取绝对值，ceil向上取整 
+        console.log(step)
+        if (timePassed >= 5000) {
+            clearInterval(timer); // finish the animation after 2 seconds
+            return;
+        }
+        ele.style.left = ele.offsetLeft + step + 'px'  //offsetLeft 左偏移量
+    }, spd);
+}
+setInterval(ele,1000);
+```
+###  js浮点数运算不精确 如何解决?
+在测试js浮点数进行加减乘除计算时，都可能出现问题，如下：
+```
+console.log(0.1 + 0.2);//0.30000000000000004
+console.log(1.0 - 0.9);//0.09999999999999998
+console.log(19.9 * 100);//1989.9999999999998
+console.log(6.6 / 0.2);//32.99999999999999
+```
+不精准原因：计算器做加减乘除运算都是转换为二进制（0和1）运算，存在误差。
+0.1 => 0.0001 1001 1001 1001…（无限循环）
+0.2 => 0.0011 0011 0011 0011…（无限循环）  
 
+```
+//核心思想：化浮点数为整数做运算
+var floatObj = function () {
+ 
+        /*
+         * 判断obj是否为一个整数
+         */
+        function isInteger(obj) {
+            return Math.floor(obj) === obj
+        }
+ 
+        /*
+         * 将一个浮点数转成整数，返回整数和倍数。如 3.14 >> 314，倍数是 100
+         * @param floatNum {number} 小数
+         * @return {object}
+         *   {times:100, num: 314}
+         */
+        function toInteger(floatNum) {
+            var ret = {times: 1, num: 0};
+            if (isInteger(floatNum)) {
+                ret.num = floatNum;
+                return ret
+            }
+            var strfi = floatNum + '';
+            var dotPos = strfi.indexOf('.');
+            var len = strfi.substr(dotPos + 1).length;
+            var times = Math.pow(10, len);
+            var intNum = parseInt(floatNum * times , 10);
+            ret.times = times;
+            ret.num = intNum;
+            return ret
+        }
+ 
+        /*
+         * 核心方法，实现加减乘除运算，确保不丢失精度
+         * 思路：把小数放大为整数（乘），进行算术运算，再缩小为小数（除）
+         *
+         * @param a {number} 运算数1
+         * @param b {number} 运算数2
+         * @param op {string} 运算类型，有加减乘除（add/subtract/multiply/divide）
+         *
+         */
+        function operation(a, b, op) {
+            var o1 = toInteger(a);
+            var o2 = toInteger(b);
+            var n1 = o1.num;
+            var n2 = o2.num;
+            var t1 = o1.times;
+            var t2 = o2.times;
+            var max = t1 > t2 ? t1 : t2;
+            var result = null;
+            switch (op) {
+                case 'add':
+                    if (t1 === t2) { // 两个小数位数相同
+                        result = n1 + n2
+                    } else if (t1 > t2) { // o1 小数位 大于 o2
+                        result = n1 + n2 * (t1 / t2)
+                    } else { // o1 小数位 小于 o2
+                        result = n1 * (t2 / t1) + n2
+                    }
+                    return result / max;
+                case 'subtract':
+                    if (t1 === t2) {
+                        result = n1 - n2
+                    } else if (t1 > t2) {
+                        result = n1 - n2 * (t1 / t2)
+                    } else {
+                        result = n1 * (t2 / t1) - n2
+                    }
+                    return result / max;
+                case 'multiply':
+                    result = (n1 * n2) / (t1 * t2);
+                    return result;
+                case 'divide':
+                    result = (n1 / n2) * (t2 / t1);
+                    return result
+            }
+        }
+ 
+        // 加减乘除的四个接口
+        function add(a, b) {
+            return operation(a, b, 'add')
+        }
+ 
+        function subtract(a, b) {
+            return operation(a, b, 'subtract')
+        }
+ 
+        function multiply(a, b) {
+            return operation(a, b, 'multiply')
+        }
+ 
+        function divide(a, b) {
+            return operation(a, b, 'divide')
+        }
+ 
+        // exports
+        return {
+            add: add,
+            subtract: subtract,
+            multiply: multiply,
+            divide: divide
+        }
+    }();
+console.log(floatObj.add(0.1, 0.2));//0.3
+console.log(floatObj.subtract(1.0, 0.9));//0.1
+console.log(floatObj.multiply(19.9, 100));//1990
+console.log(floatObj.divide(6.6, 0.2));//33
+```
+
+### js 二分查找
 
 ###   页面内有一个input输入框，实现在数组arr查询命中词并要求autocomplete效果。
 
@@ -551,10 +699,34 @@ attachFastClick(document.body);
 ```
 ###  前端跨域方案
 
-###  js浮点数运算不精确 如何解决?
+###  设置，读取，删除 cookies
+
+
+###  前端模块化理解
+CommonJS
+CommonJS规范是由NodeJS发扬光大。
+
+根据CommonJS规范，一个单独的文件就是一个模块。每一个模块都是一个单独的作用域，也就是说，在该模块内部定义的变量，无法被其他模块读取，除非定义为global对象的属性。
+CommonJS的风格通过对module.exports或exports的属性赋值来达到暴露模块对象的目的。CommonJS鬼单价在模块是同步的。
+
+AMD 是 RequireJS 在推广过程中对模块定义的规范化产出。
+CMD 是 SeaJS 在推广过程中对模块定义的规范化产出。
+AMD 是提前执行，CMD 是延迟执行。
+AMD推荐的风格通过返回一个对象做为模块对象。
+
+requireJS主要解决两个问题：
+一，多个js文件可能有依赖关系，被依赖的文件需要早于依赖它的文件加载到浏览器；
+二，js加载的时候浏览器会停止页面渲染，加载文件越多，页面失去响应时间越长。
+require()函数在加载依赖的函数的时候是异步加载的，这样浏览器不会失去响应，它指定的回调函数，只有前面的模块都加载成功后，才会运行，解决了依赖性的问题。
+
+CMD模块方式
+    define(function(require, exports, module) {
+
+      // 模块代码
+
+    });
 
 ###  new String('a') 和 'a' 是一样的么? 
-
 从语法上来说String(a)返回的是基本类型，new String(a)创建的是一个对象，两者是有区别的。
 ```
 var s0 = 'hello';
@@ -572,7 +744,50 @@ console.log(s2.foo); // undefined
 
 ###  DOM基础知识,添加元素,删除元素等等...
 
+获取元素
+
+（1）getElementByid
+
+根据元素的id属性来获取元素，获取到的是一个元素。
+
+（2）getElementsByTagName
+
+根据标签名来获取元素，结果是一个元素集合。
+
+（3）getElementsByClassName
+
+根据class属性来获取元素，结果是一个元素集合。
+
+（4）getElementsByName
+修改元素
+ document.getElementById("").innerText = '123';
+ document.getElementById("").innerHTML  = '123<br>换行了';
+
+添加删除元素
+（1）CreateElement建一个元素节点
+
+CreateElement("p")创建一个段落
+
+（2）createTextNode创建一个文本节点
+
+createTextNode("文本内容")，创建一个值为“文本内容”的文本节点.
+
+（3）appendChild添加子节点
+
+（4）removeChild  删除子节点
+
 ### DOM节点类型 
+
+
+Document：是根节点
+
+ParentNode：获取父节点
+
+childNodes：获取所有子节点
+
+firstChild：第一个子节点
+
+lastChlid：获取最后一个子节点
 
 ### 前端安全 xss 和 csrf
 
@@ -585,21 +800,25 @@ csrf 跨站请求伪造，以你的名义，发送恶意请求，通过 cookie �
 我们没法彻底杜绝攻击，只能提高攻击门槛
 
 ### 闭包相关
+
 ### 简述事件流，事件代理
 
-### js 二分查找
-
 ### 什么是栈
+
 ### 解释事件代理，事件流模型
+
 ### 数据统计，比ajax更简单的方法
+
 ### 手写jsonp实现，发送和回调接收
+
 ### 判断变量类型，如何判断变量是函数
+
 ### 如何判断一个变量是数组
 
 ### js实现css的:hover效果
 
 ### 手写debouce(去抖)函数
 
-###    Promise原理
+### Promise原理
 
-###    说一下你对generator的了解？
+### 说一下你对generator的了解？
