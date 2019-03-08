@@ -819,6 +819,4 @@ csrf 跨站请求伪造，以你的名义，发送恶意请求，通过 cookie �
 
 ### 手写debouce(去抖)函数
 
-### Promise原理
 
-### 说一下你对generator的了解？
