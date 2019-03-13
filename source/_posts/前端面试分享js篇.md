@@ -817,6 +817,46 @@ csrf 跨站请求伪造，以你的名义，发送恶意请求，通过 cookie �
 
 ### js实现css的:hover效果
 
-### 手写debouce(去抖)函数
+### 手写debouce(去抖)函数，节流函数。
 
+debounce的特点是当事件快速连续不断触发时，动作只会执行一次。 延迟debounce，是在周期结束时执行，前缘debounce，是在周期开始时执行。但当触发有间断，且间断大于我们设定的时间间隔时，动作就会有多次执行。
+
+```
+  <button id="debounce">点我防抖！</button>
+
+  <script>
+    window.onload = function() {
+      // 1、获取这个按钮，并绑定事件
+      var myDebounce = document.getElementById("debounce");
+      myDebounce.addEventListener("click", debounce(sayDebounce));
+    }
+
+    function debounce(fn) {
+      // 4、创建一个标记用来存放定时器的返回值
+       let timeout = null;
+      return function() {
+        // 5、每次当用户点击/输入的时候，把前一个定时器清除
+        clearTimeout(timeout);
+        // 6、然后创建一个新的 setTimeout，
+        // 这样就能保证点击按钮后的 interval 间隔内
+        // 如果用户还点击了的话，就不会执行 fn 函数
+        timeout = setTimeout(() => {
+          fn.call(this);
+        }, 1000);
+      };
+    }
+
+    function sayDebounce() {
+      // ... 有些需要防抖的工作，在这里执行
+      console.log("防抖成功！");
+    }
+    // 3、需要进行防抖的事件处理
+```
+
+
+throttling，节流的策略是，固定周期内，只执行一次动作，若有新事件触发，不执行。周期结束后，又有事件触发，开始新的周期。 节流策略也分前缘和延迟两种。与debounce类似，延迟是指 周期结束后执行动作，前缘是指执行动作后再开始周期。
+
+
+```
+```
 
