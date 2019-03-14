@@ -801,7 +801,6 @@ csrf 跨站请求伪造，以你的名义，发送恶意请求，通过 cookie �
 
 ### 闭包相关
 
-### 简述事件流，事件代理
 
 ### 什么是栈
 
@@ -858,5 +857,36 @@ throttling，节流的策略是，固定周期内，只执行一次动作，若�
 
 
 ```
+ window.onload = function() {
+      // 1、获取按钮，绑定点击事件
+      var myThrottle = document.getElementById("throttle");
+      myThrottle.addEventListener("click", throttle(sayThrottle));
+    }
+
+    // 2、节流函数体
+    function throttle(fn) {
+      // 4、通过闭包保存一个标记
+      let canRun = true;
+      return function() {
+        // 5、在函数开头判断标志是否为 true，不为 true 则中断函数
+        if(!canRun) {
+          return;
+        }
+        // 6、将 canRun 设置为 false，防止执行之前再被执行
+        canRun = false;
+        // 7、定时器
+        setTimeout( () => {
+          fn.call(this, arguments);
+          // 8、执行完事件（比如调用完接口）之后，重新将这个标志设置为 true
+          canRun = true;
+        }, 1000);
+      };
+    }
+
+    // 3、需要节流的事件
+    function sayThrottle() {
+      console.log("节流成功！");
+    }
+
 ```
 
