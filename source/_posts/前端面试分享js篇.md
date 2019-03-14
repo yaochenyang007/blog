@@ -447,7 +447,7 @@ console.log(obj instanceof F);//false
 ```
 
 
-###    说一下macrotask 和 microtask？
+###    javascript中的异步 macrotask 和 microtask ,说一下macrotask 和 microtask？
 macrotasks: setTimeout, setInterval, setImmediate, I/O, UI rendering
 microtasks: process.nextTick, Promises, Object.observe(废弃), MutationObserver
 
@@ -668,13 +668,11 @@ console.log(floatObj.divide(6.6, 0.2));//33
 
 ### js 二分查找
 
-###   页面内有一个input输入框，实现在数组arr查询命中词并要求autocomplete效果。
+###   页面内有一个input输入框，实现在数组arr查询命中词并要求autocomplete(自动完成)效果。
 
 ###   实现超出整数存储范围的两个大整数相加function add(a,b)。注意a和b以及函数的返回值都是字符串。
 
 ###   深入理解TCP
-
-###   浏览器事件有哪些过程? 为什么一般在冒泡阶段, 而不是在捕获阶段注册监听? addEventListener 参数分别是什么 ? 
 
 ###   移动端300ms延时的原因? 如何处理?
 300 毫秒延迟的主要原因是解决双击缩放。即用手指在屏幕上快速点击两次，iOS 自带的 Safari 浏览器会将网页缩放至原始比例。
@@ -698,6 +696,55 @@ attachFastClick(document.body);
 <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
 ```
 ###  前端跨域方案
+
+什么是跨域？
+跨域是指一个域下的文档或脚本试图去请求另一个域下的资源，这里跨域是广义的。
+
+广义的跨域：
+
+资源跳转： A链接、重定向、表单提交
+资源嵌入： <link>、<script>、<img>、<frame>等dom标签，还有样式中background:url()、@font-face()等文件外链
+脚本请求： js发起的ajax请求、dom和js对象的跨域操作等
+其实我们通常所说的跨域是狭义的，是由浏览器同源策略限制的一类请求场景。
+
+什么是同源策略？
+如果缺少了同源策略，浏览器很容易受到XSS、CSFR等攻击。所谓同源是指"协议+域名+端口"三者相同，即便两个不同的域名指向同一个ip地址，也非同源。
+
+同源策略限制以下几种行为：
+
+Cookie、LocalStorage 和 IndexDB 无法读取
+DOM 和 Js对象无法获得
+AJAX 请求不能发送
+
+跨域解决方案
+1、 通过jsonp跨域
+2、 document.domain + iframe跨域
+3、 location.hash + iframe
+4、 window.name + iframe跨域
+5、 postMessage跨域
+6、 跨域资源共享（CORS）
+7、 nginx代理跨域
+8、 nodejs中间件代理跨域
+9、 WebSocket协议跨域
+
+jsonP 跨域
+```
+<script>
+    var script = document.createElement('script');
+    script.type = 'text/javascript';
+
+    // 传参并指定回调执行函数为onBack
+    script.src = 'http://www.domain2.com:8080/login?user=admin&callback=onBack';
+    document.head.appendChild(script);
+
+    // 回调执行函数
+    function onBack(res) {
+        alert(JSON.stringify(res));
+    }
+ </script>
+```
+
+
 
 ###  设置，读取，删除 cookies
 
@@ -801,21 +848,359 @@ csrf 跨站请求伪造，以你的名义，发送恶意请求，通过 cookie �
 
 ### 闭包相关
 
+闭包，官方对闭包的解释是：一个拥有许多变量和绑定了这些变量的环境的表达式（通常是一个函数），因而这些变量也是该表达式的一部分。闭包的特点：
+　　1. 作为一个函数变量的一个引用，当函数返回时，其处于激活状态。
+　　2. 一个闭包就是当一个函数返回时，一个没有释放资源的栈区。
+　　简单的说，Javascript允许使用内部函数---即函数定义和函数表达式位于另一个函数的函数体内。而且，这些内部函数可以访问它们所在的外部函数中声明的所有局部变量、参数和声明的其他内部函数。当其中一个这样的内部函数在包含它们的外部函数之外被调用时，就会形成闭包。
+例如：两种常用的闭包
+```
+var Circle = function() {  
+   var obj = new Object();  
+   obj.PI = 3.14159;  
+     
+   obj.area = function( r ) {  
+       return this.PI * r * r;  
+   }  
+   return obj;  
+}  
+  
+var c = new Circle();  
+alert( c.area( 1.0 ) );
+```
 
-### 什么是栈
+```
+var Circle={  
+   "PI":3.14159,  
+ "area":function(r){  
+          return this.PI * r * r;  
+        }  
+};  
+alert( Circle.area(1.0) );
+```
+### 什么是栈,堆。
+堆（heap）：堆内存的简称。 
+栈（stack）：栈内存的简称。 
+在js中的变量分为基本类型和引用类型。基本类型就是保存在栈中的简单数据段，而引用类型就是那些保存在堆内存中的对象。 
+基本类型在内存中分别占有固定大小的空间，会自动释放。引用类型值大小不固定，栈内存中存放地址指向堆内存中的对象，当查询引用类型的变量时候先从栈中读取内存地址，然后再通过地址找到堆中的值。 
+```
+var arr1 = [0, 1, 2, 3];
+var arr2 = arr1;
+var str1 = arr1[2];
+console.log(arr2); // 0, 1, 2, 3
+console.log(str1); // 2
+
+arr2[4] = 4;
+str1 = 5;
+console.log(arr1); // 0, 1, 2, 3, 4
+console.log(arr1[2]); // 2
+
+```
+上面例子可以看出，当修改arr2中数据时候，arr1中的数据也发生了改变，而当修改str1的数值时，arr1中数据没发生改变。
+
+因为arr1时数组，属于引用类型，所以它赋值给arr2时候传的是栈中的地址（“指针”’），而不是堆内存中的对象。arr1 arr2都指向同一块堆内存，当arr2修改堆内存时候也就会影响到了arr1。str1得到的是一个基本类型的值，所以str1仅仅是从arr1堆内存中获取了一个数值，保存于栈内存中。str1是直接在栈中修改，并不能影响到arr1堆内存中的数据。
 
 ### 解释事件代理，事件流模型
+JavaScript 中的事件流模型 事件冒泡 和 事件捕获，以及 事件委托（也叫事件代理）。
+事件冒泡(event bubbling) 由内向外，即从 DOM 树的子到父，div -> body -> html -> document
+事件捕获(event capturing) 由外向内，即从 DOM 树的父到子，document -> html -> body -> div
 
-### 数据统计，比ajax更简单的方法
+事件冒泡&事件捕获同时存在
+原则:
+从外向内，捕获前进，遇到捕获事件立即执行
+非 target 节点，先捕获再冒泡
+target 节点，按代码书写顺序执行（无论冒泡还是捕获）
 
+
+
+addEventListener
+在 JavaScript 中，addEventListener 方法用于向指定元素添加事件句柄。
+语法：element.addEventListener(event, function, useCapture)
+
+element	目标元素	
+event	事件名，如 click
+function	事件触发时执行的函数
+useCapture	Bool值，true - 事件句柄在 捕获 阶段执行。false- false- 默认。事件句柄在 冒泡 阶段执行
+
+useCapture 默认为false，事件冒泡阶段执行
+
+冒泡举例：
+```
+<div class="t3">document
+  <div class="t2">html
+    <div class="t1">body
+      <div class="t0">div</div>
+    </div>
+  </div>
+</div>
+
+/**.js**/
+var $t0 = document.getElementsByClassName('t0')[0];
+var $t1 = document.getElementsByClassName('t1')[0];
+var $t2 = document.getElementsByClassName('t2')[0];
+var $t3 = document.getElementsByClassName('t3')[0];
+
+$t0.addEventListener("click", function(){
+  alert("click div")
+}, false);
+
+$t1.addEventListener("click", function(){
+  alert("click body")
+}, false);
+
+$t2.addEventListener("click", function(){
+  alert("click html")
+}, false);
+
+$t3.addEventListener("click", function(){
+  alert("click document")
+}, false);
+
+// click div -> click body -> click html -> click docuement
+```
+
+### 描述下js里面的事件流?为什么一般在冒泡阶段, 而不是在捕获阶段注册监听?  
+DOM2级事件模型中规定了事件流的三个阶段：捕获阶段、目标阶段、冒泡阶段。
+
+事件监听addEventListener()第三个参数为false时是设置DOM解析为事件冒泡，事件冒泡可以兼容IE早版本的浏览器。
+IE8以前的浏览器只支持事件冒泡，不支持事件捕获，它也不支持addEventListener函数。
 ### 手写jsonp实现，发送和回调接收
+```
+ <script>
+    /**
+     * 手写jsonp并返回Promise对象
+     * 参数url，data:json对象，callback函数
+     */
+    function jsonp(url, data = {}, callback = 'callback') {
+      // 处理json对象，拼接url
+      data.callback = callback
+      let params = []
+      for (let key in data) {
+        params.push(key + '=' + data[key])
+      }
+      console.log(params.join('&'))
+      // 创建script元素
+      let script = document.createElement('script')
+      script.src = url + '?' + params.join('&')
+      document.body.appendChild(script)
+      // 返回promise
+      return new Promise((resolve, reject) => {
+        window[callback] = (data) => {
+          try {
+            resolve(data)
+          } catch (e) {
+            reject(e)
+          } finally {
+            // 移除script元素
+            script.parentNode.removeChild(script)
+            console.log(script)
+          }
+        }
+      })
+
+    }
+    jsonp('http://photo.sina.cn/aj/index', {
+      page: 1,
+      cate: 'recommend'
+    }, 'jsonpcallback').then(data => {
+      console.log(data)
+    })
+  </script>
+```
+需要注意：
+1、创建script元素，设置src属性，并插入文档中，同时触发AJAX请求。
+2、返回Promise对象，then函数才行继续，回调函数中进行数据处理
+3、script元素删除清理
 
 ### 判断变量类型，如何判断变量是函数
+在 JS 中，有 5 种基本数据类型和 1 种复杂数据类型，基本数据类型有：Undefined, Null, Boolean, Number和String；复杂数据类型是Object，Object中还细分了很多具体的类型，比如：Array, Function, Date等等。
+
+总结：
+ 一般简单的使用 typeof 或 instanceof 检测（这两种检测的不完全准确）
+完全准确的使用 原生js中的 Object.prototype.toString.call  或 jquery中的 $.type 检测。
+
+```
+var num  = 123;
+
+var str  = 'abcdef';
+
+var bool = true;
+
+var arr  = [1, 2, 3, 4];
+
+var json = {name:'wenzi', age:25};
+
+var func = function(){ console.log('this is function'); }
+
+var und  = undefined;
+
+var nul  = null;
+
+var date = new Date();
+
+var reg  = /^[a-zA-Z]{5,20}$/;
+
+var error= new Error();
+
+console.log(
+
+    typeof num,
+
+    typeof str,
+
+    typeof bool,
+
+    typeof arr,
+
+    typeof json,
+
+    typeof func,
+
+    typeof und,
+
+    typeof nul,
+
+    typeof date,
+
+    typeof reg,
+
+    typeof error
+
+);
+// number string boolean object object function undefined object object object object
+
+
+console.log(
+
+    num instanceof Number,
+
+    str instanceof String,
+
+    bool instanceof Boolean,
+
+    arr instanceof Array,
+
+    json instanceof Object,
+
+    func instanceof Function,
+
+    und instanceof Object,
+
+    nul instanceof Object,
+
+    date instanceof Date,
+
+    reg instanceof RegExp,
+
+    error instanceof Error
+
+)
+// num : false
+
+// str : false
+
+// bool : false
+
+// arr : true
+
+// json : true
+
+// func : true
+
+// und : false
+
+// nul : false
+
+// date : true
+
+// reg : true
+
+// error : true
+
+
+console.log(
+
+    Object.prototype.toString.call(num),
+
+    Object.prototype.toString.call(str),
+
+    Object.prototype.toString.call(bool),
+
+    Object.prototype.toString.call(arr),
+
+    Object.prototype.toString.call(json),
+
+    Object.prototype.toString.call(func),
+
+    Object.prototype.toString.call(und),
+
+    Object.prototype.toString.call(nul),
+
+    Object.prototype.toString.call(date),
+
+    Object.prototype.toString.call(reg),
+
+    Object.prototype.toString.call(error)
+
+);
+
+// '[object Number]' '[object String]' '[object Boolean]' '[object Array]' '[object Object]'
+
+// '[object Function]' '[object Undefined]' '[object Null]' '[object Date]' '[object RegExp]' '[object Error]'
+```
 
 ### 如何判断一个变量是数组
+ var obj = { }
+var arr = [];
+//用constructor判断,arr和obj本身没有constructor属性,但它的原型上有
 
+console.log(arr.constructor === Array)  //true
+console.log(obj.constructor === Array); //false
+
+//用instanceof判断
+
+console.log(arr instanceof Array);   //true
+console.log(obj instanceof Array);//false
+
+
+//用toString方法
+console.log(Object.prototype.toString.call(arr));   //true
+console.log(Object.prototype.toString.call(obj));   //false
+
+/用Array.isArray方法
+console.log(Array.isArray(obj));   //false
+console.log(Array.isArray(arr));   //true
 ### js实现css的:hover效果
-
+在CSS中hover是指鼠标移入和移出两个事件，利用CSS实现这个效果非常的简单，可是如果放在JS中，我们就必须解析成两个事件：onmouseover和onmouseout。
+```
+<div class="header-mobile" id="headerMobile">
+    <a href="">移动客户端</a>
+    <ul class="header-mobile-list" id="mobileList">
+    <li>新浪微博</li>
+    <li>新浪新闻</li>
+    <li>新浪体育</li>
+    <li>新浪娱乐</li>
+    <li>新浪财经</li>
+    <li>天气通</li>
+    </ul>
+</div>
+window.onload=function(){
+    function $(id){
+      return document.getElementById(id);
+    }
+//鼠标进
+    $("headerMobile").onmouseover=function(){
+      // this.style.display="none";
+      $("mobileList").style.display="block"
+      //给当钱的添加样式
+      this.style.boxShadow=" 0 2px 2px gray"
+    }
+//鼠标出
+    $("headerMobile").onmouseout=function(){
+      $("mobileList").style.display="none"
+      this.style.boxShadow='none'
+    }
+}
+```
 ### 手写debouce(去抖)函数，节流函数。
 
 debounce的特点是当事件快速连续不断触发时，动作只会执行一次。 延迟debounce，是在周期结束时执行，前缘debounce，是在周期开始时执行。但当触发有间断，且间断大于我们设定的时间间隔时，动作就会有多次执行。
