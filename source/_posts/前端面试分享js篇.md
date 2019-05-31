@@ -1275,3 +1275,56 @@ throttling，节流的策略是，固定周期内，只执行一次动作，若�
 
 ```
 
+### bind的实现
+
+### map的实现
+
+### 实现一个深拷贝
+
+如何区分深拷贝与浅拷贝，简单点来说，就是假设B复制了A，当修改A时，看B是否会发生变化，如果B也跟着变了，说明这是浅拷贝，拿人手短，如果B没变，那就是深拷贝，自食其力。
+
+
+
+
+###  apply的妙用
+
+1.  什么情况下用apply,什么情况下用call
+
+在给对象参数的情况下,如果参数的形式是数组的时候,比如apply示例里面传递了参数arguments,这个参数是数组类型,并且在调用Person的时候参数的列表是对应一致的(也就是Person和Student的参数列表前两位是一致的) 就可以采用 apply , 如果我的Person的参数列表是这样的(age,name),而Student的参数列表是(name,age,grade),这样就可以用call来实现了,也就是直接指定参数列表对应值的位置(Person.call(this,age,name,grade));
+
+2.apply的一些其他巧妙用法
+
+细心的人可能已经察觉到,在我调用apply方法的时候,第一个参数是对象(this), 第二个参数是一个数组集合, 在调用Person的时候,他需要的不是一个数组,但是为什么他给我一个数组我仍然可以将数组解析为一个一个的参数,这个就是apply的一个巧妙的用处,可以将一个数组默认的转换为一个参数列表([param1,param2,param3] 转换为 param1,param2,param3) 这个如果让我们用程序来实现将数组的每一个项,来装换为参数的列表,可能都得费一会功夫,借助apply的这点特性,所以就有了以下高效率的方法:
+
+a)Math.max 可以实现得到数组中最大的一项
+
+因为Math.max 参数里面不支持Math.max([param1,param2]) 也就是数组
+
+但是它支持Math.max(param1,param2,param3…),所以可以根据刚才apply的那个特点来解决 var max=Math.max.apply(null,array),这样轻易的可以得到一个数组中最大的一项(apply会将一个数组装换为一个参数接一个参数的传递给方法)
+
+这块在调用的时候第一个参数给了一个null,这个是因为没有对象去调用这个方法,我只需要用这个方法帮我运算,得到返回的结果就行,.所以直接传递了一个null过去
+
+b)Math.min  可以实现得到数组中最小的一项
+
+同样和 max是一个思想 var min=Math.min.apply(null,array);
+
+c)Array.prototype.push 可以实现两个数组合并
+
+同样push方法没有提供push一个数组,但是它提供了push(param1,param,…paramN) 所以同样也可以通过apply来装换一下这个数组,即:
+
+```
+ 
+vararr1=new Array("1","2","3");  
+  
+vararr2=new Array("4","5","6");  
+  
+Array.prototype.push.apply(arr1,arr2);  
+
+```
+
+也可以这样理解,arr1调用了push方法,参数是通过apply将数组装换为参数列表的集合.
+
+通常在什么情况下,可以使用apply类似Math.min等之类的特殊用法:
+
+一般在目标函数只需要n个参数列表,而不接收一个数组的形式（[param1[,param2[,…[,paramN]]]]）,可以通过apply的方式巧妙地解决这个问题!
+
