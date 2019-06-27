@@ -673,6 +673,8 @@ console.log(floatObj.divide(6.6, 0.2));//33
 ###   实现超出整数存储范围的两个大整数相加function add(a,b)。注意a和b以及函数的返回值都是字符串。
 
 ###   深入理解TCP
+https://github.com/ljianshu/Blog/issues/61
+
 
 ###   移动端300ms延时的原因? 如何处理?
 300 毫秒延迟的主要原因是解决双击缩放。即用手指在屏幕上快速点击两次，iOS 自带的 Safari 浏览器会将网页缩放至原始比例。
@@ -1277,14 +1279,134 @@ throttling，节流的策略是，固定周期内，只执行一次动作，若�
 
 ### bind的实现
 
-### map的实现
+call 和 apply 都是为了改变某个函数运行时的上下文（context）而存在的，换句话说，就是为了改变函数体内部 this 的指向
+```
+一、模拟思路
+先看个常用例子
 
+var foo = {
+  value: 1
+};
+
+function bar() {
+  console.log(this.value);
+}
+
+bar.call(foo); // 1
+试想下，是不是可以先把bar变成foo对象的属性，执行完后再删除它呢？
+
+var foo = {
+  value: 1,
+  bar: function() {
+    console.log(this.value);
+  }
+};
+
+foo.bar(); // 1
+delete foo.bar;
+总结一下步骤
+
+1、将要执行的函数设置为对象的属性
+2、执行函数（难点在于取出参数）
+3、删除该函数
+二、模拟call
+Function.prototype.myCall = function(context) {
+  // 取得传入的对象（执行上下文），比如上文的foo对象
+  // 不传第一个参数，默认是window,
+  var context = context || window;
+  // 给context添加一个属性，这时的this指向调用call的函数，比如上文的bar
+  context.fn = this;
+  // 通过展开运算符和解构赋值取出context后面的参数
+  var args = [...arguments].slice(1);
+  // 执行函数
+  var result = context.fn(...args);
+  // 删除函数
+  delete context.fn;
+  return result;
+};
+三、模拟apply
+思路跟call一样，只是在处理参数的时候有点不一样
+
+Function.prototype.myApply = function(context) {
+  var context = context || window;
+  context.fn = this;
+  var result;
+
+  // 判断第二个参数是否存在，是一个数组
+  // 如果存在，则需要展开第二个参数
+  if (arguments[1]) {
+    result = context.fn(...arguments[1]);
+  } else {
+    result = context.fn();
+  }
+
+  delete context.fn;
+  return result;
+}
+四、模拟bind
+思路和作用基本一致，区别在于返回一个函数，并且可以通过bind实现柯里化
+
+Function.prototype.myBind = function(context) {
+  if (typeof this !== 'function') {
+    throw new TypeError('Error');
+  }
+
+  var _this = this;
+  var args = [...arguments].slice(1);
+
+  // 返回函数
+  return function Fn() {
+    // bind有个特点 一个绑定函数也能使用new操作符创建对象
+    if (this instanceof Fn) {
+      return new _this(args, ...arguments);
+    }
+    return _this.apply(context, args.concat(arguments));
+  }
+}
+```
+https://mp.weixin.qq.com/s/v3Jb_dDBdX1-Y090v-xxwg
+### map的实现
+https://mp.weixin.qq.com/s/v3Jb_dDBdX1-Y090v-xxwg
 ### 实现一个深拷贝
 
 如何区分深拷贝与浅拷贝，简单点来说，就是假设B复制了A，当修改A时，看B是否会发生变化，如果B也跟着变了，说明这是浅拷贝，拿人手短，如果B没变，那就是深拷贝，自食其力。
 
-
-
+递归方法实现深度克隆原理：遍历对象、数组直到里边都是基本数据类型，然后再去复制，就是深度拷贝
+```
+//定义检测数据类型的功能函数
+function checkedType(target) {   // "[object Object]"   "[object Array]"
+  return Object.prototype.toString.call(target).substring(8,13)  
+}
+//实现深度克隆---对象/数组
+function clone(target) {
+  //判断拷贝的数据类型
+  //初始化变量result 成为最终克隆的数据
+  let result,
+    targetType = checkedType(target)
+  if (targetType === 'Object') {
+    result = {}
+  } else if (targetType === 'Array') {
+    result = []
+  } else {
+    return target
+  }
+  //遍历目标数据
+  for (let i in target) {
+    //获取遍历数据结构的每一项值。
+    let value = target[i]
+    //判断目标结构里的每一值是否存在对象/数组
+    if (checkedType(value) === 'Object' || checkedType(value) === 'Array') {
+      //对象/数组里嵌套了对象/数组
+      //继续遍历获取到value值
+      result[i] = clone(value)
+    } else {
+      //获取到value值是基本的数据类型或者是函数。
+      result[i] = value
+    }
+  }
+  return result
+}
+```
 
 ###  apply的妙用
 
