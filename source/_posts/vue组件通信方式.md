@@ -12,6 +12,7 @@ categories:  vue
 父向子传递数据是通过 props，子向父是通过 events（ $emit）；通过父链 / 子链也可以通信（ $parent / $children）；
 ref 也可以访问组件实例
 
+
 #####  props 和 events
 
 父组件A通过props的方式向子组件B传递，B to A 通过在 B 组件中 $emit, A 组件中 v-on 的方式实现。
@@ -47,7 +48,7 @@ Vuex实现了一个单向数据流，在全局拥有一个State存放数据，�
 
  commit：状态改变提交操作方法。对mutation进行提交，是唯一能执行mutation的方法。
 
-mutations：状态改变操作方法，由actions中的 commit('mutation 名称')来触发。是Vuex修改state的唯一推荐方法。该方法只能进行同步操作，且方法名只能全局唯一。操作之中会有一些hook暴露出来，以进行state的监控等。
+ mutations：状态改变操作方法，由actions中的 commit('mutation 名称')来触发。是Vuex修改state的唯一推荐方法。该方法只能进行同步操作，且方法名只能全局唯一。操作之中会有一些hook暴露出来，以进行state的监控等。
 
  state：页面状态管理容器对象。集中存储Vue components中data对象的零散数据，全局唯一，以进行统一的状态管理。页面显示所需的数据从该对象中进行读取，利用Vue的细粒度数据响应机制来进行高效的状态更新。
 
@@ -55,13 +56,18 @@ mutations：状态改变操作方法，由actions中的 commit('mutation 名称'
 
 
 
-#### 跨级通信： Bus；Vuex；provide / inject API、 $attrs/$listeners
+####  跨级通信： Bus；Vuex；provide / inject API、 $attrs/$listeners
 
 #####  $attrs　/ $listeners
 
-$attrs：包含了父作用域中不被 prop 所识别 (且获取) 的特性绑定 (class 和 style 除外)。当一个组件没有声明任何 prop 时，这里会包含所有父作用域的绑定 (class 和 style 除外)，并且可以通过 v-bind="$attrs" 传入内部组件。通常配合 interitAttrs 选项一起使用。
+ $attrs：包含了父作用域中不被 prop 所识别 (且获取) 的特性绑定 (class 和 style 除外)。当一个组件没有声明任何 prop 时，
+ 这里会包含所有父作用域的绑定 (class 和 style 除外)，并且可以通过 v-bind="$attrs" 传入内部组件。
+ 通常配合 interitAttrs 选项一起使用。
+
 
 $listeners：包含了父作用域中的 (不含 .native 修饰器的) v-on 事件监听器。它可以通过 v-on="$listeners" 传入内部组件
+
+
 
 
 #####  provide / inject API

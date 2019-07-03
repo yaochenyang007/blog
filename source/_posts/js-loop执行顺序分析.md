@@ -12,8 +12,8 @@ categories: js
 异步任务：指的是不进入主线程，某个异步任务可以执行了，该任务才会进入主线程执行
 
 
-macro-task大概包括：script(整体代码), setTimeout, setInterval, setImmediate, I/O, UI rendering。
-micro-task大概包括: process.nextTick, Promise, Object.observe(已废弃), MutationObserver(html5新特性)
+macro-task(宏任务)大概包括：script(整体代码), setTimeout, setInterval, setImmediate, I/O, UI rendering。
+micro-task(微任务)大概包括: process.nextTick, Promise, Object.observe(已废弃), MutationObserver(html5新特性)
 setTimeout/Promise等我们称之为任务源。而进入任务队列的是他们指定的具体执行任务（回调函数）。
 
 <!-- more -->
