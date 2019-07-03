@@ -7,20 +7,24 @@ categories:  vue
 ### vue组件通信方式
 
 
-#### 父子通信： 父向子传递数据是通过 props，子向父是通过 events（ $emit）；通过父链 / 子链也可以通信（ $parent / $children）；ref 也可以访问组件实例；provide / inject API； $attrs/$listeners
+#### 父子通信 
+
+父向子传递数据是通过 props，子向父是通过 events（ $emit）；通过父链 / 子链也可以通信（ $parent / $children）；
+ref 也可以访问组件实例
 
 #####  props 和 events
 
 父组件A通过props的方式向子组件B传递，B to A 通过在 B 组件中 $emit, A 组件中 v-on 的方式实现。
+父向子传递数据是通过 props，子向父是通过 events（ $emit）
 
-
-##### $children　＆ ref
+##### $children　＆ ref 
 
 ref：如果在普通的 DOM 元素上使用，引用指向的就是 DOM 元素；如果用在子组件上，引用就指向组件实例
 
 $parent / $children：访问父 / 子实例
 
-#### 兄弟通信： Bus；Vuex ; $parent / $children　＆ ref
+
+#### 兄弟通信： Bus；Vuex ;
 <!--- more --->
 
 ##### Bus 
