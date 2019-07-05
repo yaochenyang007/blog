@@ -1,5 +1,6 @@
 ---
-title: Hello World
+title: hexo操作指引
+date: 2018-05-12 18:46:49
 tags: [npm,Github,Hexo,基础]
 categories: hexo
 

@@ -3,6 +3,12 @@ title: about
 date: 2018-04-10 15:56:00
 ---
 ##关于我
-一个爱研究前端技能小草人。
 
-email: 776367657@qq.com
+
+declaration:年轻人不要老熬夜.
+
+address:shenzhen.
+
+email: 776367657@qq.com;chenyang.yao@xinyi-tech.com
+
+blog:http://yaochenyang.xin

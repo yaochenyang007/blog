@@ -4,6 +4,7 @@ date: 2018-10-10 15:35:00
 tags: [vue]
 categories: vue
 ---
+
 ## Loading 加载 插件开发
 
 通过全局方法 Vue.use() 使用插件。它需要在你调用 new Vue() 启动应用之前完成：

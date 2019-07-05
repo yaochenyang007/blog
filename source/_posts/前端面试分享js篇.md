@@ -673,7 +673,71 @@ console.log(floatObj.divide(6.6, 0.2));//33
 ###   实现超出整数存储范围的两个大整数相加function add(a,b)。注意a和b以及函数的返回值都是字符串。
 
 ###   深入理解TCP
-https://github.com/ljianshu/Blog/issues/61
+
+当一台计算机想要与另一台计算机通讯时，两台计算机之间的通信需要畅通且可靠，这样才能保证正确收发数据。例如，当你想查看网页或查看电子邮件时，希望完整且按顺序查看网页，而不丢失任何内容。当你下载文件时，希望获得的是完整的文件，而不仅仅是文件的一部分，因为如果数据丢失或乱序，都不是你希望得到的结果，于是就用到了 TCP。
+
+TCP 协议全称是传输控制协议是一种面向连接的、可靠的、基于字节流的传输层通信协议，由 IETF 的 RFC 793 定义。TCP 是面向连接的、可靠的流协议。流就是指不间断的数据结构，你可以把它想象成排水管中的水流。
+
+1.TCP 连接过程
+如下图所示，可以看到建立一个 TCP 连接的过程为（三次握手的过程）:
+
+
+第一次握手
+
+客户端向服务端发送连接请求报文段。该报文段中包含自身的数据通讯初始序号。请求发送后，客户端便进入 SYN-SENT 状态。
+
+第二次握手
+
+服务端收到连接请求报文段后，如果同意连接，则会发送一个应答，该应答中也会包含自身的数据通讯初始序号，发送完成后便进入 SYN-RECEIVED 状态。
+
+第三次握手
+
+当客户端收到连接同意的应答后，还要向服务端发送一个确认报文。客户端发完这个报文段后便进入 ESTABLISHED 状态，服务端收到这个应答后也进入 ESTABLISHED 状态，此时连接建立成功。
+
+这里可能大家会有个疑惑：为什么 TCP 建立连接需要三次握手，而不是两次？这是因为这是为了防止出现失效的连接请求报文段被服务端接收的情况，从而产生错误。
+
+
+
+2.TCP 断开链接
+
+TCP 是全双工的，在断开连接时两端都需要发送 FIN 和 ACK。
+
+第一次握手
+
+若客户端 A 认为数据发送完成，则它需要向服务端 B 发送连接释放请求。
+
+第二次握手
+
+B 收到连接释放请求后，会告诉应用层要释放 TCP 链接。然后会发送 ACK 包，并进入 CLOSE_WAIT 状态，此时表明 A 到 B 的连接已经释放，不再接收 A 发的数据了。但是因为 TCP 连接是双向的，所以 B 仍旧可以发送数据给 A。
+
+第三次握手
+
+B 如果此时还有没发完的数据会继续发送，完毕后会向 A 发送连接释放请求，然后 B 便进入 LAST-ACK 状态。
+
+第四次握手
+
+A 收到释放请求后，向 B 发送确认应答，此时 A 进入 TIME-WAIT 状态。该状态会持续 2MSL（最大段生存期，指报文段在网络中生存的时间，超时会被抛弃） 时间，若该时间段内没有 B 的重发请求的话，就进入 CLOSED 状态。当 B 收到确认应答后，也便进入 CLOSED 状态。
+
+3.TCP 协议的特点
+面向连接
+面向连接，是指发送数据之前必须在两端建立连接。建立连接的方法是“三次握手”，这样能建立可靠的连接。建立连接，是为数据的可靠传输打下了基础。
+
+仅支持单播传输
+每条 TCP 传输连接只能有两个端点，只能进行点对点的数据传输，不支持多播和广播传输方式。
+
+面向字节流
+TCP 不像 UDP 一样那样一个个报文独立地传输，而是在不保留报文边界的情况下以字节流方式进行传输。
+
+可靠传输
+对于可靠传输，判断丢包，误码靠的是 TCP 的段编号以及确认号。TCP 为了保证报文传输的可靠，就给每个包一个序号，同时序号也保证了传送到接收端实体的包的按序接收。然后接收端实体对已成功收到的字节发回一个相应的确认(ACK)；如果发送端实体在合理的往返时延(RTT)内未收到确认，那么对应的数据（假设丢失了）将会被重传。
+
+提供拥塞控制
+当网络出现拥塞的时候，TCP 能够减小向网络注入数据的速率和数量，缓解拥塞
+
+TCP 提供全双工通信
+TCP 允许通信双方的应用程序在任何时候都能发送数据，因为 TCP 连接的两端都设有缓存，用来临时存放双向通信的数据。当然，TCP 可以立即发送一个数据段，也可以缓存一段时间以便一次发送更多的数据段（最大的数据段大小取决于 MSS）
+
+TCP 详解参考如下：https://github.com/ljianshu/Blog/issues/61
 
 
 ###   移动端300ms延时的原因? 如何处理?
@@ -705,7 +769,10 @@ attachFastClick(document.body);
 广义的跨域：
 
 资源跳转： A链接、重定向、表单提交
-资源嵌入： <link>、<script>、<img>、<frame>等dom标签，还有样式中background:url()、@font-face()等文件外链
+资源嵌入：
+ ```
+ <link>、<script>、<img>、<frame>等dom标签，还有样式中background:url()、@font-face()等文件外链
+ ```
 脚本请求： js发起的ajax请求、dom和js对象的跨域操作等
 其实我们通常所说的跨域是狭义的，是由浏览器同源策略限制的一类请求场景。
 
@@ -749,7 +816,50 @@ jsonP 跨域
 
 
 ###  设置，读取，删除 cookies
+```
+/**
+		 * @function 设置cookie
+		 * @param {Array} cname key
+		 * @param {String} cvalue value
+		 * @param {Number} exdays exdays
+		 */
+		setCookie(cname, cvalue, exdays) {
+			const d = new Date();
+			d.setTime(d.getTime() + exdays * 24 * 60 * 60 * 1000);
+			const expires = 'expires=' + d.toUTCString();
+			document.cookie = cname + '=' + cvalue + '; ' + expires + ';path=/';
+		},
+		/**
+		 * @function 获取cookie
+		 * @param {String} cname value
+		 * @return {String} String
+		 */
+		getCookie(cname) {
+			const name = cname + '=';
+			const ca = document.cookie.split(';');
 
+			for (let i = 0; i < ca.length; i++) {
+				let c = ca[i];
+				while (c.charAt(0) === ' ') c = c.substring(1);
+				if (c.indexOf(name) !== -1) {
+					const cnameValue = decodeURIComponent(
+						c.substring(name.length, c.length)
+					);
+					const temp = cnameValue.split('=');
+
+					return temp;
+				}
+			}
+			return '';
+		},
+		/**
+		 *  清空Cookie
+		 */
+		clearCookie() {
+			this.setCookie('', '', -1);
+		},
+
+```
 
 ###  前端模块化理解
 CommonJS
@@ -839,14 +949,30 @@ firstChild：第一个子节点
 lastChlid：获取最后一个子节点
 
 ### 前端安全 xss 和 csrf
+XSS
 
-https://mp.weixin.qq.com/s/IROuODpzxv9nTtnKgMyvsg
+XSS，即 Cross Site Script，中译是跨站脚本攻击；其原本缩写是 CSS，但为了和层叠样式表(Cascading Style Sheet)有所区分，因而在安全领域叫做 XSS。
+
+XSS 攻击是指攻击者在网站上注入恶意的客户端代码，通过恶意脚本对客户端网页进行篡改，从而在用户浏览网页时，对用户浏览器进行控制或者获取用户隐私数据的一种攻击方式。
+
+攻击者对客户端网页注入的恶意脚本一般包括 JavaScript，有时也会包含 HTML 和 Flash。有很多种方式进行 XSS 攻击，但它们的共同点为：将一些隐私数据像 cookie、session 发送给攻击者，将受害者重定向到一个由攻击者控制的网站，在受害者的机器上进行一些恶意操作。
+
+
+XSS攻击可以分为3类：反射型（非持久型）、存储型（持久型）、基于DOM。
+
+CSRF
+
+CSRF，即 Cross Site Request Forgery，中译是跨站请求伪造，是一种劫持受信任用户向服务器发送非预期请求的攻击方式。
+
+通常情况下，CSRF 攻击是攻击者借助受害者的 Cookie 骗取服务器的信任，可以在受害者毫不知情的情况下以受害者名义伪造请求发送给受攻击服务器，从而在并未授权的情况下执行在权限保护之下的操作。
 
 xss 跨站脚本攻击，主要是前端层面的，用户在输入层面插入攻击脚本，改变页面的显示，或则窃取网站 cookie，预防方法：不相信用户的所有操作，对用户输入进行一个转义，不允许 js 对 cookie 的读写
 
 csrf 跨站请求伪造，以你的名义，发送恶意请求，通过 cookie 加参数等形式过滤
 
 我们没法彻底杜绝攻击，只能提高攻击门槛
+
+参考链接:https://mp.weixin.qq.com/s/IROuODpzxv9nTtnKgMyvsg
 
 ### 闭包相关
 
@@ -1277,136 +1403,6 @@ throttling，节流的策略是，固定周期内，只执行一次动作，若�
 
 ```
 
-### bind的实现
-
-call 和 apply 都是为了改变某个函数运行时的上下文（context）而存在的，换句话说，就是为了改变函数体内部 this 的指向
-```
-一、模拟思路
-先看个常用例子
-
-var foo = {
-  value: 1
-};
-
-function bar() {
-  console.log(this.value);
-}
-
-bar.call(foo); // 1
-试想下，是不是可以先把bar变成foo对象的属性，执行完后再删除它呢？
-
-var foo = {
-  value: 1,
-  bar: function() {
-    console.log(this.value);
-  }
-};
-
-foo.bar(); // 1
-delete foo.bar;
-总结一下步骤
-
-1、将要执行的函数设置为对象的属性
-2、执行函数（难点在于取出参数）
-3、删除该函数
-二、模拟call
-Function.prototype.myCall = function(context) {
-  // 取得传入的对象（执行上下文），比如上文的foo对象
-  // 不传第一个参数，默认是window,
-  var context = context || window;
-  // 给context添加一个属性，这时的this指向调用call的函数，比如上文的bar
-  context.fn = this;
-  // 通过展开运算符和解构赋值取出context后面的参数
-  var args = [...arguments].slice(1);
-  // 执行函数
-  var result = context.fn(...args);
-  // 删除函数
-  delete context.fn;
-  return result;
-};
-三、模拟apply
-思路跟call一样，只是在处理参数的时候有点不一样
-
-Function.prototype.myApply = function(context) {
-  var context = context || window;
-  context.fn = this;
-  var result;
-
-  // 判断第二个参数是否存在，是一个数组
-  // 如果存在，则需要展开第二个参数
-  if (arguments[1]) {
-    result = context.fn(...arguments[1]);
-  } else {
-    result = context.fn();
-  }
-
-  delete context.fn;
-  return result;
-}
-四、模拟bind
-思路和作用基本一致，区别在于返回一个函数，并且可以通过bind实现柯里化
-
-Function.prototype.myBind = function(context) {
-  if (typeof this !== 'function') {
-    throw new TypeError('Error');
-  }
-
-  var _this = this;
-  var args = [...arguments].slice(1);
-
-  // 返回函数
-  return function Fn() {
-    // bind有个特点 一个绑定函数也能使用new操作符创建对象
-    if (this instanceof Fn) {
-      return new _this(args, ...arguments);
-    }
-    return _this.apply(context, args.concat(arguments));
-  }
-}
-```
-https://mp.weixin.qq.com/s/v3Jb_dDBdX1-Y090v-xxwg
-### map的实现
-https://mp.weixin.qq.com/s/v3Jb_dDBdX1-Y090v-xxwg
-### 实现一个深拷贝
-
-如何区分深拷贝与浅拷贝，简单点来说，就是假设B复制了A，当修改A时，看B是否会发生变化，如果B也跟着变了，说明这是浅拷贝，拿人手短，如果B没变，那就是深拷贝，自食其力。
-
-递归方法实现深度克隆原理：遍历对象、数组直到里边都是基本数据类型，然后再去复制，就是深度拷贝
-```
-//定义检测数据类型的功能函数
-function checkedType(target) {   // "[object Object]"   "[object Array]"
-  return Object.prototype.toString.call(target).substring(8,13)  
-}
-//实现深度克隆---对象/数组
-function clone(target) {
-  //判断拷贝的数据类型
-  //初始化变量result 成为最终克隆的数据
-  let result,
-    targetType = checkedType(target)
-  if (targetType === 'Object') {
-    result = {}
-  } else if (targetType === 'Array') {
-    result = []
-  } else {
-    return target
-  }
-  //遍历目标数据
-  for (let i in target) {
-    //获取遍历数据结构的每一项值。
-    let value = target[i]
-    //判断目标结构里的每一值是否存在对象/数组
-    if (checkedType(value) === 'Object' || checkedType(value) === 'Array') {
-      //对象/数组里嵌套了对象/数组
-      //继续遍历获取到value值
-      result[i] = clone(value)
-    } else {
-      //获取到value值是基本的数据类型或者是函数。
-      result[i] = value
-    }
-  }
-  return result
-}
-```
 
 ###  apply的妙用
 
@@ -1449,4 +1445,6 @@ Array.prototype.push.apply(arr1,arr2);
 通常在什么情况下,可以使用apply类似Math.min等之类的特殊用法:
 
 一般在目标函数只需要n个参数列表,而不接收一个数组的形式（[param1[,param2[,…[,paramN]]]]）,可以通过apply的方式巧妙地解决这个问题!
+
+
 
