@@ -100,7 +100,7 @@ p.then(function(x) {
 //输出1
 
 ```
-### bind的实现
+### bind,call,apply的实现
 
 call 和 apply 都是为了改变某个函数运行时的上下文（context）而存在的，换句话说，就是为了改变函数体内部 this 的指向
 
@@ -133,6 +133,7 @@ delete foo.bar;
 1、将要执行的函数设置为对象的属性
 2、执行函数（难点在于取出参数）
 3、删除该函数
+
 二、模拟call
 Function.prototype.myCall = function(context) {
   // 取得传入的对象（执行上下文），比如上文的foo对象
@@ -198,6 +199,7 @@ Function.prototype.myBind = function(context) {
     return _this.apply(context, args.concat(arguments));
   }
 }
+
 ```
 
 ### map的实现
@@ -212,6 +214,16 @@ thisValue	可选。对象作为该执行回调时使用，传递给函数，用�
 如果省略了 thisValue，或者传入 null、undefined，那么回调函数的 this 为全局对象。
 
 ```
+var  arr = [1, 2, 3];
+arr.map(function() {
+  console.log(this) // 在回调函数里使用 this，这个 this 就指向那个 {a: 1}
+}, {a: 1})
+
+```
+
+使用Array.prototype 实现map 方法
+
+```
   Array.prototype.newMap = function(fn,context){
         if(typeof fn !== 'function')return;
         var newArr = [];
@@ -221,9 +233,22 @@ thisValue	可选。对象作为该执行回调时使用，传递给函数，用�
         return newArr;
     }
     //调用
-    [1,2,3].newMap(function(item){
+    [1,2,3].newMap(function(item,index,arr){
         return item * 2;
     });//[2,4,6]
+
+```
+
+使用 reduce 实现数组 map 方法
+
+```
+const selfMap2 = function (fn,content){
+  let arr = Array.prototype.slice.call(this);
+  return arr.reduce( (pre,cur,index) => {
+    return [...pre,fn.call(context,cur,index,this)]
+  },[] )
+} 
+
 ```
 
 

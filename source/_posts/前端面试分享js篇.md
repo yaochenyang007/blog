@@ -5,7 +5,7 @@ tags:  [javascript，继承,promise,call,prototype,事情委托]
 categories: 面试
 ---
 
-
+<!-- https://juejin.im/post/5d23e750f265da1b855c7bbe -->
 
 ### JavaScript call,apply,bind异同
 
