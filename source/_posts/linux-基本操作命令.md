@@ -132,3 +132,17 @@ tar -cZf jpg.tar.Z *.jpg   //将目录里所有jpg文件打包成jpg.tar后，�
 
 
 
+### 上传本地文件命令
+
+登录 linux系统
+```
+ssh root@yaochenyang.xin
+```
+
+上传本地文件
+```
+scp -r 本地文件/* root@域名:/目录
+
+```
+
+
