@@ -8,7 +8,7 @@ categories:  mvvm
 ---
 
 # MVVM
-> 自己写的`MVVM`框架, [Demo](https://github.com/yaochenyang007/MVVM)
+> 自己写的`MVVM`框架, [Demo](https://yaochenyang.xin/mvvm/mvvm.html)
 ## 注意：此项目仅供学习使用。
 
 ## Todos
